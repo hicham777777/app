@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Application de gestion des employés">
+    <title>Gestion des Employés</title>
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #3498db;
+            --danger-color: #e74c3c;
+            --text-color: #2c3e50;
+            --light-bg: #ecf0f1;
+            --shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            background: white;
+            padding: 10px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 600px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--text-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .company-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+            outline: none;
+        }
+
+        textarea {
+            height: 200px;
+            resize: vertical;
+        }
+
+        .input-with-icons {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 30px;
+            top: 38%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            padding: 4px;
+            transition: var(--transition);
+            font-size: 24px;
+            line-height: 24px;
+            color: #666;
+        }
+
+        .search-icon:hover {
+            opacity: 0.7;
+        }
+
+        .clear-btn {
+            position: absolute;
+            right: 80px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background: #ddd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #666;
+            font-size: 14px;
+            transition: var(--transition);
+            display: none;
+        }
+
+        .clear-btn:hover {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        #employeeName {
+            padding-right: 70px;
+        }
+
+        #employeeImage {
+            display: none;
+            margin: 20px auto;
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+            width: auto;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-copy {
+            background: var(--secondary-color);
+            color: white;
+            width: auto;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        .btn-copy:hover {
+            background: #2980b9;
+        }
+
+        #result {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            background: var(--light-bg);
+            display: none;
+            font-size: 1rem;
+            color: var(--text-color);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .history-list {
+            list-style: none;
+            padding: 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            transition: var(--transition);
+        }
+
+        .history-item:hover {
+            background: #f9f9f9;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            box-shadow: var(--shadow);
+            display: none;
+        }
+
+        .autocomplete-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .autocomplete-item:hover {
+            background: var(--light-bg);
+            color: var(--secondary-color);
+        }
+
+        #logoUploadContainer {
+            margin: 20px 0;
+            display: none;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            max-height: 400px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 0.95rem;
+            }
+
+            .company-logo {
+                width: 30px;
+                height: 30px;
+            }
+
+            .btn {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="company-logo.png" alt="Logo de la société" class="company-logo" id="companyLogo">
+            <h1>Le mémo</h1>
+        </div>
+        
+        <form id="employeeForm" onsubmit="saveEmployee(event)">
+            <div class="input-group">
+                <label for="employeeName">N° Code</label>
+                <div class="input-with-icons">
+                    <input type="text" id="employeeName" placeholder="Entrez le code" required>
+                    <span class="search-icon" onclick="handleImageSearch()">📷</span>
+                    <span class="clear-btn" onclick="clearInput()">✕</span>
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                </div>
+                <div id="autocompleteList" class="autocomplete-list"></div>
+            </div>
+
+            <div id="logoUploadContainer" class="input-group">
+                <label for="logoInput">Changer le logo</label>
+                <input type="file" id="logoInput" accept="image/*">
+            </div>
+
+            <div class="input-group">
+                <label for="employeeInfo">Informations</label>
+                <textarea id="employeeInfo" placeholder="Saisissez les informations"></textarea>
+            </div>
+
+            <div class="input-group">
+                <label for="employeeImage">Photo</label>
+                <img id="employeeImage" src="" alt="Photo de l'employé">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const employeeForm = document.getElementById('employeeForm');
+        const nameInput = document.getElementById('employeeName');
+        const infoInput = document.getElementById('employeeInfo');
+        const image = document.getElementById('employeeImage');
+        const result = document.getElementById('result');
+        const autocompleteList = document.getElementById('autocompleteList');
+        const clearBtn = document.querySelector('.clear-btn');
+        const companyLogo = document.getElementById('companyLogo');
+        const logoInput = document.getElementById('logoInput');
+        const logoUploadContainer = document.getElementById('logoUploadContainer');
+        const imageInput = document.getElementById('imageInput');
+
+        const defaultEmployees = {
+            "17": { info: "Référence interne\n751M011001\n\nDésignation\nBSF L1M_OB_EK_4/4P04", image: "" },
+            "02": { info: "Référence interne\n751M0130041\n\nDésignation\nBSF L1M_GB_EK_4/4P04" },
+            "06": { info: "Référence interne\n751M014001\n\nDésignation\nBSF L1M_NN_EK_4/4P04" }
+        };
+
+        (function initializeData() {
+            Object.entries(defaultEmployees).forEach(([name, data]) => {
+                if (!localStorage.getItem(name.toLowerCase())) {
+                    localStorage.setItem(name.toLowerCase(), JSON.stringify(data));
+                }
+            });
+
+            const savedLogo = localStorage.getItem('companyLogo');
+            if (savedLogo) {
+                companyLogo.src = savedLogo;
+            }
+        })();
+
+        logoInput.addEventListener('change', () => {
+            const file = logoInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const logoData = e.target.result;
+                    companyLogo.src = logoData;
+                    localStorage.setItem('companyLogo', logoData);
+                    showSuccess('Logo mis à jour avec succès !');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        nameInput.addEventListener('input', () => {
+            const inputName = nameInput.value.toLowerCase().trim();
+            clearBtn.style.display = inputName ? 'flex' : 'none';
+            result.style.display = 'none';
+            resetFormFields();
+            autocompleteList.innerHTML = '';
+            autocompleteList.style.display = 'none';
+            logoUploadContainer.style.display = 'none';
+
+            if (inputName === 'code') {
+                displayCode();
+            } else if (inputName === 'historique') {
+                displayHistory();
+                logoUploadContainer.style.display = 'block';
+            } else if (inputName) {
+                const containsModifier = inputName.includes('modifier');
+                let originalName = inputName;
+                if (containsModifier) {
+                    originalName = inputName.replace('modifier', '').trim();
+                    if (originalName) {
+                        const data = JSON.parse(localStorage.getItem(originalName) || '{}');
+                        if (data.info) {
+                            infoInput.value = data.info; // تحميل المعلومات القديمة
+                            if (data.image) {
+                                image.src = data.image;
+                                image.style.display = 'block';
+                            }
+                            result.style.display = 'block';
+                            result.innerHTML = `Modification des données pour <strong>${originalName}</strong>`;
+                        }
+                    }
+                } else {
+                    loadEmployeeData(inputName);
+                }
+
+                const suggestions = Object.keys(localStorage)
+                    .filter(name => name.startsWith(inputName))
+                    .sort();
+
+                if (suggestions.length > 0) {
+                    suggestions.forEach(name => {
+                        const div = document.createElement('div');
+                        div.className = 'autocomplete-item';
+                        div.textContent = name;
+                        div.addEventListener('click', () => {
+                            nameInput.value = name;
+                            loadEmployeeData(name);
+                            autocompleteList.style.display = 'none';
+                            clearBtn.style.display = 'flex';
+                        });
+                        autocompleteList.appendChild(div);
+                    });
+                    autocompleteList.style.display = 'block';
+                }
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!nameInput.contains(e.target) && !autocompleteList.contains(e.target)) {
+                autocompleteList.style.display = 'none';
+            }
+        });
+
+        function clearInput() {
+            nameInput.value = '';
+            resetFormFields();
+            result.style.display = 'none';
+            autocompleteList.style.display = 'none';
+            clearBtn.style.display = 'none';
+            logoUploadContainer.style.display = 'none';
+            nameInput.focus();
+        }
+
+        function loadEmployeeData(inputName) {
+            const data = JSON.parse(localStorage.getItem(inputName) || '{}');
+            if (data.info) {
+                infoInput.value = data.info;
+                if (data.image) {
+                    image.src = data.image;
+                    image.style.display = 'block';
+                }
+                result.style.display = 'block';
+                result.innerHTML = `Données récupérées pour <strong>${inputName}</strong>`;
+            }
+        }
+
+        function displayHistory() {
+            result.innerHTML = '';
+            const ul = document.createElement('ul');
+            ul.className = 'history-list';
+
+            const storedKeys = Object.keys(localStorage).sort();
+            storedKeys.forEach(name => {
+                if (name !== 'companyLogo') {
+                    const li = document.createElement('li');
+                    li.className = 'history-item';
+                    li.innerHTML = `
+                        <span>${name}</span>
+                        <button class="btn btn-danger" onclick="deleteEmployee('${name}')">Supprimer</button>
+                    `;
+                    ul.appendChild(li);
+                }
+            });
+
+            result.innerHTML = storedKeys.length > 1 ? '' : 'Aucun employé enregistré.';
+            if (storedKeys.length > 1) result.appendChild(ul);
+            result.style.display = 'block';
+        }
+
+        function displayCode() {
+            const currentCode = document.documentElement.outerHTML;
+            const storedNames = Object.keys(localStorage)
+                .filter(name => name !== 'companyLogo')
+                .sort()
+                .map(name => `<li>${name}</li>`).join('');
+
+            result.innerHTML = `
+                <h3>Code Source de l'Application :</h3>
+                <pre>${currentCode.replace(/</g, '<').replace(/>/g, '>')}</pre>
+                <h3>Liste des Noms Enregistrés :</h3>
+                <ul>${storedNames}</ul>
+                <button class="btn btn-copy" onclick="copyCode()">Copier le Code</button>
+            `;
+            result.style.display = 'block';
+        }
+
+        function copyCode() {
+            const currentCode = document.documentElement.outerHTML;
+            navigator.clipboard.writeText(currentCode).then(() => {
+                showSuccess('Code copié avec succès !');
+            }).catch(() => {
+                showError('Erreur lors de la copie du code.');
+            });
+        }
+
+        function deleteEmployee(name) {
+            localStorage.removeItem(name);
+            displayHistory();
+        }
+
+        function saveEmployee(event) {
+            event.preventDefault();
+            let name = nameInput.value.trim().toLowerCase();
+            const info = infoInput.value.trim();
+
+            if (!name) {
+                showError('Veuillez entrer le nom de l\'employé.');
+                return;
+            }
+
+            const containsModifier = name.includes('modifier');
+            let originalName = name;
+            if (containsModifier) {
+                originalName = name.replace('modifier', '').trim();
+                if (!originalName) {
+                    showError('Veuillez entrer un nom valide après "modifier".');
+                    return;
+                }
+            }
+
+            const existingData = JSON.parse(localStorage.getItem(originalName) || '{}');
+            const data = {
+                info: info || (existingData.info || 'Aucune information fournie'),
+                image: image.src.startsWith('data:') ? image.src : (existingData.image || '')
+            };
+
+            if (existingData.info && !containsModifier) {
+                showError('Veuillez ajouter "modifier" au nom pour éditer les informations.');
+                return;
+            }
+
+            localStorage.setItem(originalName, JSON.stringify(data));
+            if (containsModifier && existingData.info) {
+                showSuccess(`Les informations de ${originalName} ont été mises à jour avec succès !`);
+            } else {
+                showSuccess(`Employé ${originalName} enregistré avec succès !`);
+            }
+            clearForm();
+        }
+
+        function resetFormFields() {
+            infoInput.value = '';
+            image.src = '';
+            image.style.display = 'none';
+        }
+
+        function clearForm() {
+            employeeForm.reset();
+            resetFormFields();
+            result.style.display = 'none';
+            autocompleteList.style.display = 'none';
+            clearBtn.style.display = 'none';
+            logoUploadContainer.style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            result.innerHTML = message;
+            result.style.background = '#d4edda';
+            result.style.color = '#155724';
+            result.style.display = 'block';
+            setTimeout(() => result.style.display = 'none', 3000);
+        }
+
+        function showError(message) {
+            result.innerHTML = message;
+            result.style.background = '#f8d7da';
+            result.style.color = '#721c24';
+            result.style.display = 'block';
+            setTimeout(() => result.style.display = 'none', 3000);
+        }
+
+        function handleImageSearch() {
+            const name = nameInput.value.trim().toLowerCase();
+            if (!name) {
+                showError('Veuillez entrer un nom d\'employé avant d\'ajouter une image.');
+                return;
+            }
+            imageInput.click();
+        }
+
+        imageInput.addEventListener('change', () => {
+            const file = imageInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    image.src = e.target.result;
+                    image.style.display = 'block';
+                    showSuccess('Image ajoutée avec succès pour ' + nameInput.value.trim());
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>

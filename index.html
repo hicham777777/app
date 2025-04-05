@@ -325,14 +325,14 @@
     <div class="container">
         <div class="header">
             <img src="company-logo.png" alt="Logo de la société" class="company-logo" id="companyLogo">
-            <h1>Gestion des Employés</h1>
+            <h1>Code marquage</h1>
         </div>
         
         <form id="employeeForm" onsubmit="saveEmployee(event)">
             <div class="input-group">
-                <label for="employeeName">Nom de l'employé</label>
+                <label for="employeeName">N° Code Marquage</label>
                 <div class="input-with-icons">
-                    <input type="text" id="employeeName" placeholder="Entrez le nom de l'employé" required>
+                    <input type="text" id="employeeName" placeholder="Entrez le code" required>
                     <span class="search-icon" onclick="handleImageSearch()">📷</span>
                     <span class="clear-btn" onclick="clearInput()">✕</span>
                     <input type="file" id="imageInput" accept="image/*" style="display: none;">
@@ -346,12 +346,12 @@
             </div>
 
             <div class="input-group">
-                <label for="employeeInfo">Informations sur l'employé</label>
-                <textarea id="employeeInfo" placeholder="Entrez les informations de l'employé"></textarea>
+                <label for="employeeInfo">Informations du batterie</label>
+                <textarea id="employeeInfo" placeholder="Saisissez les informations de la batterie"></textarea>
             </div>
 
             <div class="input-group">
-                <label for="employeeImage">Photo de l'employé</label>
+                <label for="employeeImage">Photo de batterie</label>
                 <img id="employeeImage" src="" alt="Photo de l'employé">
             </div>
 
@@ -375,7 +375,7 @@
         const imageInput = document.getElementById('imageInput');
 
         const defaultEmployees = {
-            "hatim zitouni": { info: "Coordinateur UAP", image: "" },
+           "hatim zitouni": { info: "Coordinateur UAP", image: "" },
             "hamza laassili": { info: "Chef d'équipe", image: "" },
             "omar essabq": { info: "Chef d'équipe", image: "" },
             "ilyass ghazi": { info: "Chef d'équipe", image: "" },
@@ -394,8 +394,11 @@
             "mehdi elgharoudi": { info: "Opérateur", image: "" },
             "saâd lafram": { info: "Opérateur", image: "" },
             "hassan jabir": { info: "Opérateur", image: "" },
-            "maribat": { info: "Réalisé par M°Hicham Tadi 2025", image: "" },
+            "maribat": { info: "Société marocaine de fabrication de batteries", image: "" },            
             "aziz tahiri": { info: "Service maintenance", image: "" }
+
+
+
         };
 
         (function initializeData() {
@@ -554,6 +557,16 @@
 
             if (!name) {
                 showError('Veuillez entrer le nom de l\'employé.');
+                return;
+            }
+
+            // التحقق مما إذا كان الاسم موجودًا بالفعل في localStorage
+            const existingData = JSON.parse(localStorage.getItem(name) || '{}');
+            const containsModifier = name.includes('modifier');
+
+            // إذا كان الاسم موجودًا ولا يحتوي على "modifier"، لا يتم تعديل المعلومات
+            if (existingData.info && !containsModifier) {
+                showError('Veuillez ajouter "modifier" au nom pour éditer les informations.');
                 return;
             }
 

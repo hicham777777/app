@@ -325,14 +325,14 @@
     <div class="container">
         <div class="header">
             <img src="company-logo.png" alt="Logo de la société" class="company-logo" id="companyLogo">
-            <h1>Le mémo</h1>
+            <h1>Gestion des Employés</h1>
         </div>
         
         <form id="employeeForm" onsubmit="saveEmployee(event)">
             <div class="input-group">
-                <label for="employeeName">N° Code</label>
+                <label for="employeeName">Nom de l'employé</label>
                 <div class="input-with-icons">
-                    <input type="text" id="employeeName" placeholder="Entrez le code" required>
+                    <input type="text" id="employeeName" placeholder="Entrez le nom de l'employé" required>
                     <span class="search-icon" onclick="handleImageSearch()">📷</span>
                     <span class="clear-btn" onclick="clearInput()">✕</span>
                     <input type="file" id="imageInput" accept="image/*" style="display: none;">
@@ -346,12 +346,12 @@
             </div>
 
             <div class="input-group">
-                <label for="employeeInfo">Informations</label>
-                <textarea id="employeeInfo" placeholder="Saisissez les informations"></textarea>
+                <label for="employeeInfo">Informations sur l'employé</label>
+                <textarea id="employeeInfo" placeholder="Entrez les informations de l'employé"></textarea>
             </div>
 
             <div class="input-group">
-                <label for="employeeImage">Photo</label>
+                <label for="employeeImage">Photo de l'employé</label>
                 <img id="employeeImage" src="" alt="Photo de l'employé">
             </div>
 
@@ -375,10 +375,26 @@
         const imageInput = document.getElementById('imageInput');
 
         const defaultEmployees = {
-            "17": { info: "Référence interne\n751M011001\n\nDésignation\nBSF L1M_OB_EK_4/4P04", image: "" },
-            "02": { info: "Référence interne\n751M0130041\n\nDésignation\nBSF L1M_GB_EK_4/4P04" },
-            "06": { info: "Référence interne\n751M014001\n\nDésignation\nBSF L1M_NN_EK_4/4P04" }
-            "18": { info: "recherche" }
+            "hatim zitouni": { info: "Coordinateur UAP", image: "" },
+            "hamza laassili": { info: "Chef d'équipe", image: "" },
+            "omar essabq": { info: "Chef d'équipe", image: "" },
+            "ilyass ghazi": { info: "Chef d'équipe", image: "" },
+            "ayoub aarab": { info: "Machiniste (remplissage)", image: "" },
+            "ahmed mrini": { info: "Machiniste remplissage", image: "" },
+            "achraf elkalal": { info: "Machiniste finition", image: "" },
+            "nabil akili": { info: "Machiniste finition", image: "" },
+            "abdelaali elhaouari": { info: "Machiniste finition", image: "" },
+            "ayoub rifak": { info: "Machiniste mise à niveau", image: "" },
+            "abdelkrim sellam": { info: "Machiniste mise à niveau", image: "" },
+            "achraf barakat": { info: "Machiniste mise à niveau", image: "" },
+            "said bourahmone": { info: "Aide machiniste", image: "" },
+            "abdelaziz chemlal": { info: "Aide machiniste", image: "" },
+            "ismail azzedine": { info: "Aide machiniste", image: "" },
+            "arahal hassan": { info: "Aide machiniste", image: "" },
+            "mehdi elgharoudi": { info: "Opérateur", image: "" },
+            "saâd lafram": { info: "Opérateur", image: "" },
+            "hassan jabir": { info: "Opérateur", image: "" },
+            "aziz tahiri": { info: "Service maintenance", image: "" }
         };
 
         (function initializeData() {
@@ -423,26 +439,6 @@
                 displayHistory();
                 logoUploadContainer.style.display = 'block';
             } else if (inputName) {
-                const containsModifier = inputName.includes('modifier');
-                let originalName = inputName;
-                if (containsModifier) {
-                    originalName = inputName.replace('modifier', '').trim();
-                    if (originalName) {
-                        const data = JSON.parse(localStorage.getItem(originalName) || '{}');
-                        if (data.info) {
-                            infoInput.value = data.info; // تحميل المعلومات القديمة
-                            if (data.image) {
-                                image.src = data.image;
-                                image.style.display = 'block';
-                            }
-                            result.style.display = 'block';
-                            result.innerHTML = `Modification des données pour <strong>${originalName}</strong>`;
-                        }
-                    }
-                } else {
-                    loadEmployeeData(inputName);
-                }
-
                 const suggestions = Object.keys(localStorage)
                     .filter(name => name.startsWith(inputName))
                     .sort();
@@ -462,6 +458,8 @@
                     });
                     autocompleteList.style.display = 'block';
                 }
+
+                loadEmployeeData(inputName);
             }
         });
 
@@ -526,7 +524,7 @@
 
             result.innerHTML = `
                 <h3>Code Source de l'Application :</h3>
-                <pre>${currentCode.replace(/</g, '<').replace(/>/g, '>')}</pre>
+                <pre>${currentCode.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
                 <h3>Liste des Noms Enregistrés :</h3>
                 <ul>${storedNames}</ul>
                 <button class="btn btn-copy" onclick="copyCode()">Copier le Code</button>
@@ -550,7 +548,7 @@
 
         function saveEmployee(event) {
             event.preventDefault();
-            let name = nameInput.value.trim().toLowerCase();
+            const name = nameInput.value.trim().toLowerCase();
             const info = infoInput.value.trim();
 
             if (!name) {
@@ -558,33 +556,13 @@
                 return;
             }
 
-            const containsModifier = name.includes('modifier');
-            let originalName = name;
-            if (containsModifier) {
-                originalName = name.replace('modifier', '').trim();
-                if (!originalName) {
-                    showError('Veuillez entrer un nom valide après "modifier".');
-                    return;
-                }
-            }
-
-            const existingData = JSON.parse(localStorage.getItem(originalName) || '{}');
             const data = {
-                info: info || (existingData.info || 'Aucune information fournie'),
-                image: image.src.startsWith('data:') ? image.src : (existingData.image || '')
+                info: info || 'Aucune information fournie',
+                image: image.src.startsWith('data:') ? image.src : ''
             };
 
-            if (existingData.info && !containsModifier) {
-                showError('Veuillez ajouter "modifier" au nom pour éditer les informations.');
-                return;
-            }
-
-            localStorage.setItem(originalName, JSON.stringify(data));
-            if (containsModifier && existingData.info) {
-                showSuccess(`Les informations de ${originalName} ont été mises à jour avec succès !`);
-            } else {
-                showSuccess(`Employé ${originalName} enregistré avec succès !`);
-            }
+            localStorage.setItem(name, JSON.stringify(data));
+            showSuccess('Employé enregistré avec succès !');
             clearForm();
         }
 

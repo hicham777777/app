@@ -110,28 +110,9 @@
             align-items: center;
         }
 
-        .search-icon {
-            position: absolute;
-            right: 30px;
-            top: 38%;
-            transform: translateY(-50%);
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            padding: 4px;
-            transition: var(--transition);
-            font-size: 24px;
-            line-height: 24px;
-            color: #666;
-        }
-
-        .search-icon:hover {
-            opacity: 0.7;
-        }
-
         .clear-btn {
             position: absolute;
-            right: 80px;
+            right: 30px;
             top: 50%;
             transform: translateY(-50%);
             width: 20px;
@@ -154,7 +135,7 @@
         }
 
         #employeeName {
-            padding-right: 70px;
+            padding-right: 60px;
         }
 
         #employeeImage {
@@ -165,60 +146,6 @@
             border-radius: 12px;
             box-shadow: var(--shadow);
             transition: var(--transition);
-        }
-
-        input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            font-size: 0.85rem;
-            cursor: pointer;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            text-transform: uppercase;
-        }
-
-        .btn-primary {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #27ae60;
-            transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background: var(--danger-color);
-            color: white;
-            width: auto;
-            padding: 8px 15px;
-            font-size: 0.9rem;
-        }
-
-        .btn-danger:hover {
-            background: #c0392b;
-        }
-
-        .btn-copy {
-            background: var(--secondary-color);
-            color: white;
-            width: auto;
-            padding: 8px 15px;
-            font-size: 0.9rem;
-            margin-top: 10px;
-        }
-
-        .btn-copy:hover {
-            background: #2980b9;
         }
 
         #result {
@@ -287,11 +214,6 @@
             color: var(--secondary-color);
         }
 
-        #logoUploadContainer {
-            margin: 20px 0;
-            display: none;
-        }
-
         pre {
             background: #f4f4f4;
             padding: 10px;
@@ -315,10 +237,6 @@
                 width: 30px;
                 height: 30px;
             }
-
-            .btn {
-                padding: 12px;
-            }
         }
     </style>
 </head>
@@ -329,51 +247,35 @@
             <h1>Le mémo</h1>
         </div>
         
-        <form id="employeeForm" onsubmit="saveEmployee(event)">
-            <div class="input-group">
-                <label for="employeeName">N° Code</label>
-                <div class="input-with-icons">
-                    <input type="text" id="employeeName" placeholder="Entrez le code" required>
-                    <span class="search-icon" onclick="handleImageSearch()">📷</span>
-                    <span class="clear-btn" onclick="clearInput()">✕</span>
-                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
-                </div>
-                <div id="autocompleteList" class="autocomplete-list"></div>
+        <div class="input-group">
+            <label for="employeeName">N° Code</label>
+            <div class="input-with-icons">
+                <input type="text" id="employeeName" placeholder="Entrez le code" required>
+                <span class="clear-btn" onclick="clearInput()">✕</span>
             </div>
+            <div id="autocompleteList" class="autocomplete-list"></div>
+        </div>
 
-            <div id="logoUploadContainer" class="input-group">
-                <label for="logoInput">Changer le logo</label>
-                <input type="file" id="logoInput" accept="image/*">
-            </div>
+        <div class="input-group">
+            <label for="employeeInfo">Informations</label>
+            <textarea id="employeeInfo" placeholder="Informations" readonly></textarea>
+        </div>
 
-            <div class="input-group">
-                <label for="employeeInfo">Informations</label>
-                <textarea id="employeeInfo" placeholder="Saisissez les informations"></textarea>
-            </div>
-
-            <div class="input-group">
-                <label for="employeeImage">Photo</label>
-                <img id="employeeImage" src="" alt="Photo de l'employé">
-            </div>
-
-            <button type="submit" class="btn btn-primary">Enregistrer</button>
-        </form>
+        <div class="input-group">
+            <label for="employeeImage">Photo</label>
+            <img id="employeeImage" src="" alt="Photo de l'employé">
+        </div>
 
         <div id="result"></div>
     </div>
 
     <script>
-        const employeeForm = document.getElementById('employeeForm');
         const nameInput = document.getElementById('employeeName');
         const infoInput = document.getElementById('employeeInfo');
         const image = document.getElementById('employeeImage');
         const result = document.getElementById('result');
         const autocompleteList = document.getElementById('autocompleteList');
         const clearBtn = document.querySelector('.clear-btn');
-        const companyLogo = document.getElementById('companyLogo');
-        const logoInput = document.getElementById('logoInput');
-        const logoUploadContainer = document.getElementById('logoUploadContainer');
-        const imageInput = document.getElementById('imageInput');
 
         // قائمة الموظفين الثابتة (كما لو كانت من GitHub)
         const employees = {
@@ -396,24 +298,9 @@
             "mehdi elgharoudi": { info: "Opérateur", image: "" },
             "saâd lafram": { info: "Opérateur", image: "" },
             "hassan jabir": { info: "Opérateur", image: "" },
-            "maribat": { info: "Realisé par hicham tadi 02/03/2025", image: "" },            
+            "maribat": { info: "Realisé par hicham tadi 03/03/2025", image: "" },            
             "aziz tahiri": { info: "Service maintenance", image: "" }
         };
-
-        let currentLogo = "company-logo.png"; // الشعار الافتراضي
-
-        logoInput.addEventListener('change', () => {
-            const file = logoInput.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    currentLogo = e.target.result;
-                    companyLogo.src = currentLogo;
-                    showSuccess('Logo mis à jour avec succès !');
-                };
-                reader.readAsDataURL(file);
-            }
-        });
 
         nameInput.addEventListener('input', () => {
             const inputName = nameInput.value.toLowerCase().trim();
@@ -422,30 +309,13 @@
             resetFormFields();
             autocompleteList.innerHTML = '';
             autocompleteList.style.display = 'none';
-            logoUploadContainer.style.display = 'none';
 
             if (inputName === 'code') {
                 displayCode();
             } else if (inputName === 'historique') {
                 displayHistory();
-                logoUploadContainer.style.display = 'block';
             } else if (inputName) {
-                const containsModifier = inputName.includes('modifier');
-                let originalName = inputName;
-                if (containsModifier) {
-                    originalName = inputName.replace('modifier', '').trim();
-                    if (originalName && employees[originalName]) {
-                        infoInput.value = employees[originalName].info;
-                        if (employees[originalName].image) {
-                            image.src = employees[originalName].image;
-                            image.style.display = 'block';
-                        }
-                        result.style.display = 'block';
-                        result.innerHTML = `Modification des données pour <strong>${originalName}</strong>`;
-                    }
-                } else {
-                    loadEmployeeData(inputName);
-                }
+                loadEmployeeData(inputName);
 
                 const suggestions = Object.keys(employees)
                     .filter(name => name.startsWith(inputName))
@@ -481,7 +351,6 @@
             result.style.display = 'none';
             autocompleteList.style.display = 'none';
             clearBtn.style.display = 'none';
-            logoUploadContainer.style.display = 'none';
             nameInput.focus();
         }
 
@@ -540,59 +409,10 @@
             });
         }
 
-        function saveEmployee(event) {
-            event.preventDefault();
-            let name = nameInput.value.trim().toLowerCase();
-            const info = infoInput.value.trim();
-
-            if (!name) {
-                showError('Veuillez entrer le nom de l\'employé.');
-                return;
-            }
-
-            const containsModifier = name.includes('modifier');
-            let originalName = name;
-            if (containsModifier) {
-                originalName = name.replace('modifier', '').trim();
-                if (!originalName) {
-                    showError('Veuillez entrer un nom valide après "modifier".');
-                    return;
-                }
-            }
-
-            // التحقق مما إذا كان الاسم موجودًا في القائمة الثابتة
-            if (!employees[originalName]) {
-                showError('Impossible d\'ajouter un nouvel employé. Utilisez un nom existant avec "modifier" pour éditer.');
-                return;
-            }
-
-            // تحديث البيانات فقط إذا كان الاسم موجودًا وتم استخدام "modifier"
-            if (containsModifier) {
-                const data = {
-                    info: info || employees[originalName].info || 'Aucune information fournie',
-                    image: image.src.startsWith('data:') ? image.src : (employees[originalName].image || '')
-                };
-                employees[originalName] = data;
-                showSuccess(`Les informations de ${originalName} ont été mises à jour avec succès !`);
-                clearForm();
-            } else {
-                showError('Veuillez ajouter "modifier" au nom pour éditer les informations.');
-            }
-        }
-
         function resetFormFields() {
             infoInput.value = '';
             image.src = '';
             image.style.display = 'none';
-        }
-
-        function clearForm() {
-            employeeForm.reset();
-            resetFormFields();
-            result.style.display = 'none';
-            autocompleteList.style.display = 'none';
-            clearBtn.style.display = 'none';
-            logoUploadContainer.style.display = 'none';
         }
 
         function showSuccess(message) {
@@ -610,32 +430,6 @@
             result.style.display = 'block';
             setTimeout(() => result.style.display = 'none', 3000);
         }
-
-        function handleImageSearch() {
-            const name = nameInput.value.trim().toLowerCase();
-            if (!name) {
-                showError('Veuillez entrer un nom d\'employé avant d\'ajouter une image.');
-                return;
-            }
-            if (!employees[name.replace('modifier', '').trim()]) {
-                showError('Ce nom n\'existe pas dans la liste.');
-                return;
-            }
-            imageInput.click();
-        }
-
-        imageInput.addEventListener('change', () => {
-            const file = imageInput.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    image.src = e.target.result;
-                    image.style.display = 'block';
-                    showSuccess('Image ajoutée avec succès pour ' + nameInput.value.trim());
-                };
-                reader.readAsDataURL(file);
-            }
-        });
     </script>
 </body>
 </html>

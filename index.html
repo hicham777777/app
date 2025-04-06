@@ -63,11 +63,7 @@
             margin-left: 10px;
         }
 
-        .company-logo {
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
-        }
+  
 
         .input-group {
             margin-bottom: 25px;
@@ -86,7 +82,7 @@
         textarea {
             width: 100%;
             padding: 14px;
-            border: 2px solid #ddd;
+            border: 2px solid #808080;
             border-radius: 10px;
             font-size: 1rem;
             transition: var(--transition);
@@ -100,7 +96,7 @@
         }
 
         textarea {
-            height: 200px;
+            height: 400px;
             resize: vertical;
         }
 
@@ -240,14 +236,14 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="company-logo.png" alt="Logo de la société" class="company-logo" id="companyLogo">
-            <h1>Le mémo</h1>
+            <img src="company-logo.png" alt="" class="company-logo" id="companyLogo">
+            <h1>Marquage Batteries</h1>
         </div>
         
         <div class="input-group">
             <label for="employeeName">N° Code</label>
             <div class="input-with-icons">
-                <input type="text" id="employeeName" placeholder="Entrez le code" required>
+                <input type="text" id="employeeName" placeholder="Exemple : y9" required>
                 <span class="clear-btn" onclick="clearInput()">✕</span>
             </div>
             <div id="autocompleteList" class="autocomplete-list"></div>
@@ -259,7 +255,7 @@
         </div>
 
         <div class="input-group">
-            <label for="employeeImage">Photo</label>
+            <label for="employeeImage"></label>
             <img id="employeeImage" src="" alt="Photo de l'employé">
         </div>
 

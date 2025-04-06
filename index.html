@@ -375,8 +375,8 @@
         const logoUploadContainer = document.getElementById('logoUploadContainer');
         const imageInput = document.getElementById('imageInput');
 
-        // كائن لتخزين البيانات مؤقتًا في الذاكرة
-        let employees = {
+        // قائمة الموظفين الثابتة (كما لو كانت من GitHub)
+        const employees = {
             "hatim zitouni": { info: "Coordinateur UAP", image: "" },
             "hamza laassili": { info: "Chef d'équipe", image: "" },
             "omar essabq": { info: "Chef d'équipe", image: "" },
@@ -395,7 +395,6 @@
             "arahal hassan": { info: "Aide machiniste", image: "" },
             "mehdi elgharoudi": { info: "Opérateur", image: "" },
             "saâd lafram": { info: "Opérateur", image: "" },
-            "maribat": { info: "Realisé par Tadi Hicham 01/03/2025", image: "" },            
             "hassan jabir": { info: "Opérateur", image: "" },
             "aziz tahiri": { info: "Service maintenance", image: "" }
         };
@@ -506,10 +505,7 @@
             storedKeys.forEach(name => {
                 const li = document.createElement('li');
                 li.className = 'history-item';
-                li.innerHTML = `
-                    <span>${name}</span>
-                    <button class="btn btn-danger" onclick="deleteEmployee('${name}')">Supprimer</button>
-                `;
+                li.innerHTML = `<span>${name}</span>`;
                 ul.appendChild(li);
             });
 
@@ -543,11 +539,6 @@
             });
         }
 
-        function deleteEmployee(name) {
-            delete employees[name];
-            displayHistory();
-        }
-
         function saveEmployee(event) {
             event.preventDefault();
             let name = nameInput.value.trim().toLowerCase();
@@ -568,23 +559,24 @@
                 }
             }
 
-            const data = {
-                info: info || (employees[originalName]?.info || 'Aucune information fournie'),
-                image: image.src.startsWith('data:') ? image.src : (employees[originalName]?.image || '')
-            };
-
-            if (employees[originalName] && !containsModifier) {
-                showError('Veuillez ajouter "modifier" au nom pour éditer les informations.');
+            // التحقق مما إذا كان الاسم موجودًا في القائمة الثابتة
+            if (!employees[originalName]) {
+                showError('Impossible d\'ajouter un nouvel employé. Utilisez un nom existant avec "modifier" pour éditer.');
                 return;
             }
 
-            employees[originalName] = data;
-            if (containsModifier && employees[originalName]) {
+            // تحديث البيانات فقط إذا كان الاسم موجودًا وتم استخدام "modifier"
+            if (containsModifier) {
+                const data = {
+                    info: info || employees[originalName].info || 'Aucune information fournie',
+                    image: image.src.startsWith('data:') ? image.src : (employees[originalName].image || '')
+                };
+                employees[originalName] = data;
                 showSuccess(`Les informations de ${originalName} ont été mises à jour avec succès !`);
+                clearForm();
             } else {
-                showSuccess(`Employé ${originalName} enregistré avec succès !`);
+                showError('Veuillez ajouter "modifier" au nom pour éditer les informations.');
             }
-            clearForm();
         }
 
         function resetFormFields() {
@@ -622,6 +614,10 @@
             const name = nameInput.value.trim().toLowerCase();
             if (!name) {
                 showError('Veuillez entrer un nom d\'employé avant d\'ajouter une image.');
+                return;
+            }
+            if (!employees[name.replace('modifier', '').trim()]) {
+                showError('Ce nom n\'existe pas dans la liste.');
                 return;
             }
             imageInput.click();

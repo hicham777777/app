@@ -6,6 +6,7 @@
     <meta name="description" content="Application de gestion des employés">
     <title>Gestion des Employés</title>
     <style>
+        /* نفس أنماط CSS السابقة بدون تغيير */
         :root {
             --primary-color: #2ecc71;
             --secondary-color: #3498db;
@@ -325,12 +326,12 @@
     <div class="container">
         <div class="header">
             <img src="company-logo.png" alt="Logo de la société" class="company-logo" id="companyLogo">
-            <h1>Code marquage</h1>
+            <h1>Le mémo</h1>
         </div>
         
         <form id="employeeForm" onsubmit="saveEmployee(event)">
             <div class="input-group">
-                <label for="employeeName">N° Code Marquage</label>
+                <label for="employeeName">N° Code</label>
                 <div class="input-with-icons">
                     <input type="text" id="employeeName" placeholder="Entrez le code" required>
                     <span class="search-icon" onclick="handleImageSearch()">📷</span>
@@ -346,12 +347,12 @@
             </div>
 
             <div class="input-group">
-                <label for="employeeInfo">Informations du batterie</label>
-                <textarea id="employeeInfo" placeholder="Saisissez les informations de la batterie"></textarea>
+                <label for="employeeInfo">Informations</label>
+                <textarea id="employeeInfo" placeholder="Saisissez les informations"></textarea>
             </div>
 
             <div class="input-group">
-                <label for="employeeImage">Photo de batterie</label>
+                <label for="employeeImage">Photo</label>
                 <img id="employeeImage" src="" alt="Photo de l'employé">
             </div>
 
@@ -374,9 +375,10 @@
         const logoUploadContainer = document.getElementById('logoUploadContainer');
         const imageInput = document.getElementById('imageInput');
 
-        const defaultEmployees = {
-           "hatim zitouni": { info: "Coordinateur UAP", image: "" },
-            "hamza laassili": { info: "Chef d'équipe zone de formation/finition", image: "" },
+        // كائن لتخزين البيانات مؤقتًا في الذاكرة
+        let employees = {
+            "hatim zitouni": { info: "Coordinateur UAP", image: "" },
+            "hamza laassili": { info: "Chef d'équipe", image: "" },
             "omar essabq": { info: "Chef d'équipe", image: "" },
             "ilyass ghazi": { info: "Chef d'équipe", image: "" },
             "ayoub aarab": { info: "Machiniste (remplissage)", image: "" },
@@ -393,35 +395,20 @@
             "arahal hassan": { info: "Aide machiniste", image: "" },
             "mehdi elgharoudi": { info: "Opérateur", image: "" },
             "saâd lafram": { info: "Opérateur", image: "" },
+            "maribat": { info: "Realisé par hicham tadi 01/03/2025", image: "" },            
             "hassan jabir": { info: "Opérateur", image: "" },
-            "maribat": { info: "Société marocaine de fabrication de batteries", image: "" },            
             "aziz tahiri": { info: "Service maintenance", image: "" }
-
-
-
         };
 
-        (function initializeData() {
-            Object.entries(defaultEmployees).forEach(([name, data]) => {
-                if (!localStorage.getItem(name.toLowerCase())) {
-                    localStorage.setItem(name.toLowerCase(), JSON.stringify(data));
-                }
-            });
-
-            const savedLogo = localStorage.getItem('companyLogo');
-            if (savedLogo) {
-                companyLogo.src = savedLogo;
-            }
-        })();
+        let currentLogo = "company-logo.png"; // الشعار الافتراضي
 
         logoInput.addEventListener('change', () => {
             const file = logoInput.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    const logoData = e.target.result;
-                    companyLogo.src = logoData;
-                    localStorage.setItem('companyLogo', logoData);
+                    currentLogo = e.target.result;
+                    companyLogo.src = currentLogo;
                     showSuccess('Logo mis à jour avec succès !');
                 };
                 reader.readAsDataURL(file);
@@ -443,7 +430,24 @@
                 displayHistory();
                 logoUploadContainer.style.display = 'block';
             } else if (inputName) {
-                const suggestions = Object.keys(localStorage)
+                const containsModifier = inputName.includes('modifier');
+                let originalName = inputName;
+                if (containsModifier) {
+                    originalName = inputName.replace('modifier', '').trim();
+                    if (originalName && employees[originalName]) {
+                        infoInput.value = employees[originalName].info;
+                        if (employees[originalName].image) {
+                            image.src = employees[originalName].image;
+                            image.style.display = 'block';
+                        }
+                        result.style.display = 'block';
+                        result.innerHTML = `Modification des données pour <strong>${originalName}</strong>`;
+                    }
+                } else {
+                    loadEmployeeData(inputName);
+                }
+
+                const suggestions = Object.keys(employees)
                     .filter(name => name.startsWith(inputName))
                     .sort();
 
@@ -462,8 +466,6 @@
                     });
                     autocompleteList.style.display = 'block';
                 }
-
-                loadEmployeeData(inputName);
             }
         });
 
@@ -484,11 +486,10 @@
         }
 
         function loadEmployeeData(inputName) {
-            const data = JSON.parse(localStorage.getItem(inputName) || '{}');
-            if (data.info) {
-                infoInput.value = data.info;
-                if (data.image) {
-                    image.src = data.image;
+            if (employees[inputName]) {
+                infoInput.value = employees[inputName].info;
+                if (employees[inputName].image) {
+                    image.src = employees[inputName].image;
                     image.style.display = 'block';
                 }
                 result.style.display = 'block';
@@ -501,34 +502,31 @@
             const ul = document.createElement('ul');
             ul.className = 'history-list';
 
-            const storedKeys = Object.keys(localStorage).sort();
+            const storedKeys = Object.keys(employees).sort();
             storedKeys.forEach(name => {
-                if (name !== 'companyLogo') {
-                    const li = document.createElement('li');
-                    li.className = 'history-item';
-                    li.innerHTML = `
-                        <span>${name}</span>
-                        <button class="btn btn-danger" onclick="deleteEmployee('${name}')">Supprimer</button>
-                    `;
-                    ul.appendChild(li);
-                }
+                const li = document.createElement('li');
+                li.className = 'history-item';
+                li.innerHTML = `
+                    <span>${name}</span>
+                    <button class="btn btn-danger" onclick="deleteEmployee('${name}')">Supprimer</button>
+                `;
+                ul.appendChild(li);
             });
 
-            result.innerHTML = storedKeys.length > 1 ? '' : 'Aucun employé enregistré.';
-            if (storedKeys.length > 1) result.appendChild(ul);
+            result.innerHTML = storedKeys.length > 0 ? '' : 'Aucun employé enregistré.';
+            if (storedKeys.length > 0) result.appendChild(ul);
             result.style.display = 'block';
         }
 
         function displayCode() {
             const currentCode = document.documentElement.outerHTML;
-            const storedNames = Object.keys(localStorage)
-                .filter(name => name !== 'companyLogo')
+            const storedNames = Object.keys(employees)
                 .sort()
                 .map(name => `<li>${name}</li>`).join('');
 
             result.innerHTML = `
                 <h3>Code Source de l'Application :</h3>
-                <pre>${currentCode.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
+                <pre>${currentCode.replace(/</g, '<').replace(/>/g, '>')}</pre>
                 <h3>Liste des Noms Enregistrés :</h3>
                 <ul>${storedNames}</ul>
                 <button class="btn btn-copy" onclick="copyCode()">Copier le Code</button>
@@ -546,13 +544,13 @@
         }
 
         function deleteEmployee(name) {
-            localStorage.removeItem(name);
+            delete employees[name];
             displayHistory();
         }
 
         function saveEmployee(event) {
             event.preventDefault();
-            const name = nameInput.value.trim().toLowerCase();
+            let name = nameInput.value.trim().toLowerCase();
             const info = infoInput.value.trim();
 
             if (!name) {
@@ -560,23 +558,32 @@
                 return;
             }
 
-            // التحقق مما إذا كان الاسم موجودًا بالفعل في localStorage
-            const existingData = JSON.parse(localStorage.getItem(name) || '{}');
             const containsModifier = name.includes('modifier');
+            let originalName = name;
+            if (containsModifier) {
+                originalName = name.replace('modifier', '').trim();
+                if (!originalName) {
+                    showError('Veuillez entrer un nom valide après "modifier".');
+                    return;
+                }
+            }
 
-            // إذا كان الاسم موجودًا ولا يحتوي على "modifier"، لا يتم تعديل المعلومات
-            if (existingData.info && !containsModifier) {
+            const data = {
+                info: info || (employees[originalName]?.info || 'Aucune information fournie'),
+                image: image.src.startsWith('data:') ? image.src : (employees[originalName]?.image || '')
+            };
+
+            if (employees[originalName] && !containsModifier) {
                 showError('Veuillez ajouter "modifier" au nom pour éditer les informations.');
                 return;
             }
 
-            const data = {
-                info: info || 'Aucune information fournie',
-                image: image.src.startsWith('data:') ? image.src : ''
-            };
-
-            localStorage.setItem(name, JSON.stringify(data));
-            showSuccess('Employé enregistré avec succès !');
+            employees[originalName] = data;
+            if (containsModifier && employees[originalName]) {
+                showSuccess(`Les informations de ${originalName} ont été mises à jour avec succès !`);
+            } else {
+                showSuccess(`Employé ${originalName} enregistré avec succès !`);
+            }
             clearForm();
         }
 

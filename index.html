@@ -1,473 +1,350 @@
 <!DOCTYPE html>
-<html lang="fr" dir="ltr">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Application de gestion des employés">
-    <title>Gestion des Employés</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Gestion SAV Universel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* نفس أنماط CSS السابقة بدون تغيير */
         :root {
-            --primary-color: #2ecc71;
-            --secondary-color: #3498db;
-            --danger-color: #e74c3c;
-            --text-color: #2c3e50;
-            --light-bg: #ecf0f1;
-            --shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
+            --primary: #2A5C82;
+            --secondary: #5E9CD3;
+            --success: #28a745;
+            --danger: #dc3545;
+            --light: #f8f9fa;
+            --dark: #343a40;
         }
 
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, sans-serif;
+            background: var(--light);
+            line-height: 1.5;
+            padding: 15px;
         }
 
         .container {
-            background: white;
-            padding: 10px;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-            width: 100%;
-            max-width: 600px;
-            animation: fadeIn 0.5s ease-in-out;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .main-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
         }
 
         .header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 40px;
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 15px 0;
         }
 
-        h1 {
-            color: var(--text-color);
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-left: 10px;
+        .header h1 {
+            color: var(--primary);
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            margin-bottom: 10px;
         }
 
-  
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
 
         .input-group {
-            margin-bottom: 25px;
             position: relative;
         }
 
-        label {
+        .input-group label {
             display: block;
-            margin-bottom: 10px;
-            color: var(--text-color);
+            margin-bottom: 8px;
             font-weight: 500;
-            font-size: 0.8rem;
+            color: var(--dark);
+            font-size: 0.9rem;
         }
 
-        input[type="text"],
-        textarea {
+        .input-group input {
             width: 100%;
-            padding: 14px;
-            border: 2px solid #808080;
-            border-radius: 10px;
+            padding: 10px 12px;
+            border: 2px solid #ced4da;
+            border-radius: 8px;
             font-size: 1rem;
-            transition: var(--transition);
+            transition: all 0.2s ease;
+            -webkit-appearance: none;
         }
 
-        input[type="text"]:focus,
-        textarea:focus {
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        .input-group input:focus {
+            border-color: var(--secondary);
             outline: none;
+            box-shadow: 0 0 0 3px rgba(94, 156, 211, 0.25);
         }
 
-        textarea {
-            height: 250px;
-            resize: vertical;
+        .input-group input.error {
+            border-color: var(--danger);
+            background: #fee;
         }
 
-        .input-with-icons {
-            position: relative;
+        .button-group {
             display: flex;
-            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
         }
 
-        .clear-btn {
-            position: absolute;
-            right: 30px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 20px;
-            height: 20px;
-            background: #ddd;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
-            color: #666;
-            font-size: 14px;
-            transition: var(--transition);
-            display: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            flex: 1 1 200px;
+            text-align: center;
+            font-size: 0.95rem;
         }
 
-        .clear-btn:hover {
-            background: var(--danger-color);
-            color: white;
-        }
+        .btn-success { background: var(--success); color: white; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
 
-        #employeeName {
-            padding-right: 60px;
-        }
+        .btn:active { transform: scale(0.98); }
 
-        #employeeImage {
-            display: none;
-            margin: 20px auto;
-            max-width: 100%;
-            height: auto;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-        }
-
-        #result {
-            margin-top: 25px;
-            padding: 20px;
-            border-radius: 10px;
-            background: var(--light-bg);
-            display: none;
-            font-size: 1rem;
-            color: var(--text-color);
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .history-list {
-            list-style: none;
-            padding: 0;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
-            transition: var(--transition);
-        }
-
-        .history-item:hover {
-            background: #f9f9f9;
-        }
-
-        .history-item:last-child {
-            border-bottom: none;
-        }
-
-        .autocomplete-list {
-            position: absolute;
-            top: 100%;
-            left: 0;
+        .results-table {
             width: 100%;
+            border-collapse: collapse;
             background: white;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 10;
-            box-shadow: var(--shadow);
-            display: none;
-        }
-
-        .autocomplete-item {
-            padding: 10px 14px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .autocomplete-item:hover {
-            background: var(--light-bg);
-            color: var(--secondary-color);
-        }
-
-        pre {
-            background: #f4f4f4;
-            padding: 10px;
-            border-radius: 5px;
+            margin-top: 20px;
             overflow-x: auto;
-            max-height: 400px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
+            display: block;
         }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 25px;
+        .results-table th,
+        .results-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+            min-width: 120px;
+            font-size: 0.9rem;
+        }
+
+        .results-table th {
+            background: var(--primary);
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+
+        @media (max-width: 576px) {
+            .input-grid {
+                grid-template-columns: 1fr;
             }
 
-            h1 {
-                font-size: 0.95rem;
+            .btn {
+                flex: 1 1 100%;
             }
 
-            
+            .results-table {
+                font-size: 0.85rem;
+            }
+
+            .results-table th,
+            .results-table td {
+                padding: 8px;
+            }
+        }
+
+        @media (pointer: coarse) {
+            input, button {
+                font-size: 16px !important;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <img src="company-logo.png" alt="" class="company-logo" id="companyLogo">
-            <h1>Nomenclatures Maribat</h1>
-        </div>
-        
-        <div class="input-group">
-            <label for="employeeName">N° Code</label>
-            <div class="input-with-icons">
-                <input type="text" id="employeeName" placeholder="Exemple : W9 or Nom employer" required>
-                <span class="clear-btn" onclick="clearInput()">✕</span>
+        <div class="main-card">
+            <div class="header">
+                <h1><i class="fas fa-tools"></i> Service Après-Vente</h1>
             </div>
-            <div id="autocompleteList" class="autocomplete-list"></div>
-        </div>
 
-        <div class="input-group">
-            <label for="employeeInfo">Informations</label>
-            <textarea id="employeeInfo" placeholder="Informations" readonly></textarea>
-        </div>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label for="manualDateField"><i class="fas fa-calendar-day"></i> Date</label>
+                    <input type="date" id="manualDateField" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="typeField"><i class="fas fa-tag"></i> Type</label>
+                    <input type="text" id="typeField" placeholder="Type d'intervention" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="codeSaveField"><i class="fas fa-hashtag"></i> Code SAV</label>
+                    <input type="text" id="codeSaveField" pattern="[A-Za-z0-9]{6}" 
+                           maxlength="6" placeholder="6 caractères" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="codeAssemblageField"><i class="fas fa-cube"></i> Assemblage</label>
+                    <input type="text" id="codeAssemblageField" pattern="[A-Za-z0-9]{7}" 
+                           maxlength="7" placeholder="7 caractères" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="codeFinitionField"><i class="fas fa-paint-brush"></i> Finition</label>
+                    <input type="text" id="codeFinitionField" pattern="[A-Za-z0-9]{4}" 
+                           maxlength="4" placeholder="4 caractères" required>
+                </div>
+            </div>
 
-        <div class="input-group">
-            <label for="employeeImage"></label>
-            <img id="employeeImage" src="" alt="Photo de l'employé">
-        </div>
+            <div class="button-group">
+                <button class="btn btn-success" onclick="SAV.save()">
+                    <i class="fas fa-save"></i> Enregistrer
+                </button>
+                <button class="btn btn-primary" onclick="SAV.exportExcel()">
+                    <i class="fas fa-file-excel"></i> Excel
+                </button>
+                <button class="btn btn-danger" onclick="SAV.clearAll()">
+                    <i class="fas fa-trash"></i> Effacer
+                </button>
+            </div>
 
-        <div id="result"></div>
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>SAV</th>
+                        <th>Assemblage</th>
+                        <th>Finition</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsBody">
+                </tbody>
+            </table>
+            <div class="no-results" id="noResults">Aucun résultat trouvé</div>
+        </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script>
-        const nameInput = document.getElementById('employeeName');
-        const infoInput = document.getElementById('employeeInfo');
-        const image = document.getElementById('employeeImage');
-        const result = document.getElementById('result');
-        const autocompleteList = document.getElementById('autocompleteList');
-        const clearBtn = document.querySelector('.clear-btn');
+        const SAV = {
+            init() {
+                this.data = JSON.parse(localStorage.getItem('sav-data')) || [];
+                this.load();
+                this.render();
+            },
 
-        // قائمة الموظفين الثابتة (كما لو كانت من GitHub)
-        const employees = {
-            "hatim zitouni": { info: "Coordinateur UAP", image: "" },
-            "hamza laassili": { info: "Chef d'équipe", image: "" },
-            "omar essabq": { info: "Chef d'équipe", image: "" },
-            "ilyass ghazi": { info: "Chef d'équipe", image: "" },
-            "ayoub aarab": { info: "Machiniste (remplissage)", image: "" },
-            "ahmed mrini": { info: "Machiniste remplissage", image: "" },
-            "achraf elkalal": { info: "Machiniste finition", image: "" },
-            "nabil akili": { info: "Machiniste finition", image: "" },
-            "abdelaali elhaouari": { info: "Machiniste finition", image: "" },
-            "ayoub rifak": { info: "Machiniste mise à niveau", image: "" },
-            "abdelkrim sellam": { info: "Machiniste mise à niveau", image: "https://i.ibb.co/rKTfytjp/51994218.jpg" },
-            "achraf barakat": { info: "Machiniste mise à niveau", image: "" },
-            "said bourahmone": { info: "Aide machiniste", image: "" },
-            "abdelaziz chemlal": { info: "Aide machiniste", image: "" },
-            "ismail azzedine": { info: "Aide machiniste", image: "" },
-            "arahal hassan": { info: "Aide machiniste", image: "" },
-            "mehdi elgharoudi": { info: "Opérateur", image: "" },
-            "saâd lafram": { info: "Opérateur", image: "" },
-            "hassan jabir": { info: "Opérateur", image: "" },
-            "maribat": { info: "Realisé par hicham tadi 03/03/2025", image: "" },            
-            "aziz tahiri": { info: "Service maintenance", image: "" },  
-            "mahjouba zinoune": { info: "توفيت يوم 20/04/2024", image: "" },  
-            "20/04/2024": { info: " جدة محجوبة توفيت يوم 20/04/2024", image: "" },  
-            "ahmed ghiat": { info: "توفي يوم 20/11/2011", image: "" },  
+            load() {
+                const lastDate = localStorage.getItem('sav-last-date');
+                if (lastDate) document.getElementById('manualDateField').value = lastDate;
+            },
 
+            validate() {
+                let valid = true;
+                document.querySelectorAll('input').forEach(input => {
+                    if (!input.checkValidity()) {
+                        input.reportValidity();
+                        input.classList.add('error');
+                        valid = false;
+                    } else {
+                        input.classList.remove('error');
+                    }
+                });
+                return valid;
+            },
 
-           
-      "w9": { info: "Référence interne\n751M055013\n\nDésignation\nBSF L5M_NN_MF_9/8P15L_SRL_PE1.0", image: "https://i.ibb.co/QF4yCmDX/19233495.jpg" },
-      "02": { info: "Référence interne\n751M0130041\n\nDésignation\nBSF L1M_GB_EK_4/4P04", image: ""},
-      "05": { info: "Référence interne\n751M015002\n\nDésignation\nBSF L1M_GR_MF_5/4P04", image: "" },
-      "10": { info: "Référence interne\n751M015003\n\nDésignation\nBSF L1M_NN_MF_5/4P04", image: "" },
-      "09": { info: "Référence interne\n751M015004\n\nDésignation\nBSF L1M_NN_MF_5/4P04", image: "" },
-      "11": { info: "Référence interne\n751M015005\n\nDésignation\nBSF L1M_NN_MF_5/4P15L", image: "" },
-      "04": { info: "Référence interne\n751M015006\n\nDésignation\nBSF L1M_GN_MF_5/4P15L", image: "" },
-      "N3": { info: "Référence interne\n751M015007\n\nDésignation\nBSF L1M_NN_MF_5/4P15L_SRL", image: "" },
-      "N4": { info: "Référence interne\n751M015008\n\nDésignation\nBSF L1M_GN_MF_5/4P15L_SRL", image: "" },
-      "15": { info: "Référence interne\n751M015020\n\nDésignation\nBSF L1M_NN_MF_PREMIUM_B_D+_5/5P04", image: "" },
-      "12": { info: "Référence interne\n751M015101\n\nDésignation\nBSF L1M_NN_MF_L_3/3P04", image: "" },
-      "13": { info: "Référence interne\n751M015102\n\nDésignation\nBSF L1M_NN_MF_L_3/3P15L", image: "" },
-      "14": { info: "Référence interne\n751M015103\n\nDésignation\nBSF L1M_NN_MF_L_3/4P15L", image: "" },
+            save() {
+                if (!this.validate()) return;
 
-      "n2": { info: "Référence interne\n751M015104\n\nDésignation\nBSF L1M_NN_MF_L_3/3P15L_SRL", image: "" },
-      "16": { info: "Référence interne\n751M015120\n\nDésignation\nBSF L1M_NN_MF_PREMIUM_B_G+_5/5P04", image: "" },
-      "24": { info: "Référence interne\n751M023002\n\nDésignation\nBSF L2M_GN_FH_5/5P04", image: "" },
-      "20": { info: "Référence interne\n751M023003\n\nDésignation\nBSF L2M_GB_FH_5/5P04", image: "" },
-      "23": { info: "Référence interne\n751M023004\n\nDésignation\nBSF L2M_GN_EK_5/5P04", image: "" },
-      "21": { info: "Référence interne\n751M023005\n\nDésignation\nBSF L2M_GB_FH_5/5P04", image: "" },
-      "27": { info: "Référence interne\n751M023006\n\nDésignation\nBSF L2M_GR_EK_5/5P04", image: "" },
-      "22": { info: "Référence interne\n751M023007\n\nDésignation\nBSF L2M_GB_FH_5/5P15L", image: "" },
-      "30": { info: "Référence interne\n751M024001\n\nDésignation\nBSF L2M_NN_EK_5/5P15L", image: "" },
-      "C8": { info: "Référence interne\n751M034106\n\nDésignation\nBSF L3M_NN_EK_L_4/4P15L", image: "" },
+                const record = {
+                    type: document.getElementById('typeField').value.trim(),
+                    codeSave: document.getElementById('codeSaveField').value.toUpperCase(),
+                    codeAssemblage: document.getElementById('codeAssemblageField').value.toUpperCase(),
+                    codeFinition: document.getElementById('codeFinitionField').value.toUpperCase(),
+                    date: document.getElementById('manualDateField').value || new Date().toISOString().split('T')[0],
+                    timestamp: new Date().toISOString()
+                };
 
+                this.data.unshift(record);
+                localStorage.setItem('sav-data', JSON.stringify(this.data));
+                localStorage.setItem('sav-last-date', document.getElementById('manualDateField').value);
+                this.clearForm();
+                this.render();
+            },
 
+            delete(index) {
+                if (confirm('Supprimer cet enregistrement ?')) {
+                    this.data.splice(index, 1);
+                    localStorage.setItem('sav-data', JSON.stringify(this.data));
+                    this.render();
+                }
+            },
 
+            clearAll() {
+                if (confirm('Tout supprimer ?')) {
+                    this.data = [];
+                    localStorage.removeItem('sav-data');
+                    this.render();
+                }
+            },
 
- 
+            clearForm() {
+                document.querySelectorAll('input:not(#manualDateField)').forEach(input => {
+                    input.value = '';
+                    input.classList.remove('error');
+                });
+            },
 
-            
+            render() {
+                const tbody = document.getElementById('resultsBody');
+                const noResults = document.getElementById('noResults');
+                
+                tbody.innerHTML = this.data.map((item, index) => `
+                    <tr>
+                        <td>${item.type}</td>
+                        <td><code>${item.codeSave}</code></td>
+                        <td><code>${item.codeAssemblage}</code></td>
+                        <td><code>${item.codeFinition}</code></td>
+                        <td>${item.date}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="SAV.delete(${index})" style="padding: 6px 12px;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
 
+                noResults.style.display = this.data.length ? 'none' : 'block';
+            },
 
-
-
-
-
-            
-            "zzzz": { info: "?", image: "" }
+            exportExcel() {
+                const ws = XLSX.utils.json_to_sheet(this.data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "SAV");
+                XLSX.writeFile(wb, `sav_${new Date().toISOString().slice(0,10)}.xlsx`);
+            }
         };
 
-        nameInput.addEventListener('input', () => {
-            const inputName = nameInput.value.toLowerCase().trim();
-            clearBtn.style.display = inputName ? 'flex' : 'none';
-            result.style.display = 'none';
-            resetFormFields();
-            autocompleteList.innerHTML = '';
-            autocompleteList.style.display = 'none';
-
-            if (inputName === 'code') {
-                displayCode();
-            } else if (inputName === 'historique') {
-                displayHistory();
-            } else if (inputName) {
-                loadEmployeeData(inputName);
-
-                const suggestions = Object.keys(employees)
-                    .filter(name => name.startsWith(inputName))
-                    .sort();
-
-                if (suggestions.length > 0) {
-                    suggestions.forEach(name => {
-                        const div = document.createElement('div');
-                        div.className = 'autocomplete-item';
-                        div.textContent = name;
-                        div.addEventListener('click', () => {
-                            nameInput.value = name;
-                            loadEmployeeData(name);
-                            autocompleteList.style.display = 'none';
-                            clearBtn.style.display = 'flex';
-                        });
-                        autocompleteList.appendChild(div);
-                    });
-                    autocompleteList.style.display = 'block';
-                }
-            }
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!nameInput.contains(e.target) && !autocompleteList.contains(e.target)) {
-                autocompleteList.style.display = 'none';
-            }
-        });
-
-        function clearInput() {
-            nameInput.value = '';
-            resetFormFields();
-            result.style.display = 'none';
-            autocompleteList.style.display = 'none';
-            clearBtn.style.display = 'none';
-            nameInput.focus();
-        }
-
-        function loadEmployeeData(inputName) {
-            if (employees[inputName]) {
-                infoInput.value = employees[inputName].info;
-                if (employees[inputName].image) {
-                    image.src = employees[inputName].image;
-                    image.style.display = 'block';
-                }
-                result.style.display = 'block';
-                result.innerHTML = `Données récupérées pour <strong>${inputName}</strong>`;
-            }
-        }
-
-        function displayHistory() {
-            result.innerHTML = '';
-            const ul = document.createElement('ul');
-            ul.className = 'history-list';
-
-            const storedKeys = Object.keys(employees).sort();
-            storedKeys.forEach(name => {
-                const li = document.createElement('li');
-                li.className = 'history-item';
-                li.innerHTML = `<span>${name}</span>`;
-                ul.appendChild(li);
-            });
-
-            result.innerHTML = storedKeys.length > 0 ? '' : 'Aucun employé enregistré.';
-            if (storedKeys.length > 0) result.appendChild(ul);
-            result.style.display = 'block';
-        }
-
-        function displayCode() {
-            const currentCode = document.documentElement.outerHTML;
-            const storedNames = Object.keys(employees)
-                .sort()
-                .map(name => `<li>${name}</li>`).join('');
-a
-            result.innerHTML = `
-                <h3>Code Source de l'Application :</h3>
-                <pre>${currentCode.replace(/</g, '<').replace(/>/g, '>')}</pre>
-                <h3>Liste des Noms Enregistrés :</h3>
-                <ul>${storedNames}</ul>
-                <button class="btn btn-copy" onclick="copyCode()">Copier le Code</button>
-            `;
-            result.style.display = 'block';
-        }
-
-        function copyCode() {
-            const currentCode = document.documentElement.outerHTML;
-            navigator.clipboard.writeText(currentCode).then(() => {
-                showSuccess('Code copié avec succès !');
-            }).catch(() => {
-                showError('Erreur lors de la copie du code.');
-            });
-        }
-
-        function resetFormFields() {
-            infoInput.value = '';
-            image.src = '';
-            image.style.display = 'none';
-        }
-
-        function showSuccess(message) {
-            result.innerHTML = message;
-            result.style.background = '#d4edda';
-            result.style.color = '#155724';
-            result.style.display = 'block';
-            setTimeout(() => result.style.display = 'none', 3000);
-        }
-
-        function showError(message) {
-            result.innerHTML = message;
-            result.style.background = '#f8d7da';
-            result.style.color = '#721c24';
-            result.style.display = 'block';
-            setTimeout(() => result.style.display = 'none', 3000);
-        }
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => SAV.init());
     </script>
 </body>
 </html>
